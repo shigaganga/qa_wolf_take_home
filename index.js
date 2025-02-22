@@ -35,6 +35,7 @@ async function sortHackerNewsArticles() {
       const nextTimestamp = parseInt(articles[i + 1].timestamp);
 
       if (currentTimestamp > nextTimestamp) {
+        
         sorted = false;
         break;
       }
