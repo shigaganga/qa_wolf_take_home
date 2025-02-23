@@ -1,23 +1,18 @@
 const { chromium } = require("playwright");
 
-async function sortHackerNewsArticles() {
-  // Step 1: Launch the browser
-  const browser = await chromium.launch({ headless: false }); // Set to true to run in the background
+async function hackerNews() {
+  const browser = await chromium.launch({ headless: false }); 
   const context = await browser.newContext();
   const page = await context.newPage();
-
-  // Step 2: Navigate to Hacker News "Newest" page
   await page.goto("https://news.ycombinator.com/newest");
-
-  // Step 3: Wait for the articles to load
   await page.waitForSelector(".athing");
-
-  // Step 4: Extract the first 100 articles with their timestamps
   const articles = await page.evaluate(() => {
     const rows = Array.from(document.querySelectorAll(".athing"));
     
     return rows.slice(0, 100).map(row => {
-      const title = row.querySelector(".titleline a")?.innerText.trim();
+      const titleElement = row.querySelector(".titleline a");
+      const title = titleElement ? titleElement.innerText.trim() : "No title";
+
       const id = row.getAttribute("id");
       const scoreElement = document.querySelector(`#score_${id}`);
       
@@ -31,8 +26,7 @@ async function sortHackerNewsArticles() {
   let sorted = true;
   for (let i = 0; i < articles.length - 1; i++) {
     if (articles[i].timestamp && articles[i + 1].timestamp) {
-      const currentTimestamp = parseInt(articles[i].timestamp);
-      const nextTimestamp = parseInt(articles[i + 1].timestamp);
+     
 
       if (currentTimestamp > nextTimestamp) {
         
@@ -54,6 +48,8 @@ async function sortHackerNewsArticles() {
 }
 
 // Run the function
-(async () => {
-  await sortHackerNewsArticles();
-})();
+async function execute() {
+  await hackerNews();
+}
+
+execute();
